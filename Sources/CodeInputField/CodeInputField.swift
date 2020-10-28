@@ -45,7 +45,6 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
             updateSegments()
             
             if input.count == numberOfDigits {
-                sendActions(for: .editingChanged)
                 sendActions(for: .editingDidEnd)
             }
         }
@@ -62,9 +61,10 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     
     private var focussedSegmentIndex: Int = 0 {
         didSet {
-            guard focussedSegmentIndex != oldValue else { return }
-
+            // We always want to send the event even though the index might not have changed
             sendActions(for: .editingChanged)
+            
+            guard focussedSegmentIndex != oldValue else { return }
             
             UIView.transition(with: self, duration: 0.1, options: [.transitionCrossDissolve]) {
                 self.updateSegments()
