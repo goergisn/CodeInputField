@@ -13,9 +13,7 @@ let secureInputField = CodeInputField(segments: (0..<4).map { _ in
     segment.backgroundColor = segment.tintColor?.withAlphaComponent(0.3)
     segment.nonEmptyBackgroundColor = .purple
     return segment
-})
-
-secureInputField.shouldClearInputWhenBecomingFirstResponder = true
+}, shouldClearInputWhenBecomingFirstResponder: true)
 ```
     
 ![Code Input Preview](https://github.com/goergisn/CodeInputField/blob/main/Resources/code_input.gif)
