@@ -192,7 +192,7 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     }
     
     public convenience init(segments: [CodeInputFieldSegment],
-                     shouldClearInputWhenBecomingFirstResponder: Bool = false) {
+                            shouldClearInputWhenBecomingFirstResponder: Bool) {
         self.init(segments: segments)
         self.shouldClearInputWhenBecomingFirstResponder = shouldClearInputWhenBecomingFirstResponder
     }
