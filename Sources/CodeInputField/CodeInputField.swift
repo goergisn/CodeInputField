@@ -21,7 +21,6 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         }
     }
     
-    
     /**
      Clears the input when becoming first responder
      Useful for obfuscated code input
@@ -44,6 +43,10 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     private var values: [Digit?] {
         didSet {
             updateSegments()
+            
+            if values.count == numberOfDigits {
+                sendActions(for: .editingDidEnd)
+            }
         }
     }
     
@@ -59,12 +62,8 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     private var focussedSegmentIndex: Int = 0 {
         didSet {
             guard focussedSegmentIndex != oldValue else { return }
-            
-            if focussedSegmentIndex == highestIndex {
-                sendActions(for: .editingDidEnd)
-            } else {
-                sendActions(for: .editingChanged)
-            }
+
+            sendActions(for: .editingChanged)
             
             UIView.transition(with: self, duration: 0.1, options: [.transitionCrossDissolve]) {
                 self.updateSegments()
