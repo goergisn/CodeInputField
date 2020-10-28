@@ -1,18 +1,30 @@
 
 import UIKit
 
+
+/**
+ An input field allowing the user to enter digits
+ 
+- Sends `.editingChanged` event on input change
+- Sends `.editingDidEnd` event when input is complete (all fields are filled)
+ */
 public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     
     // MARK: Public Accessors
     
     public var input: String {
         get {
-            return values.map { (value) -> String in
-                return "\(String(describing: value))"
+            return values.compactMap { (value) -> String? in
+                guard let value = value else { return nil }
+                return "\(value.rawValue)"
             }.joined(separator: "")
         }
     }
     
+    /**
+     Clears the input when becoming first responder
+     Useful for obfuscated code input
+     */
     public var shouldClearInputWhenBecomingFirstResponder: Bool = false
     
     public var preferredSegmentSize = CGSize(width: 50, height: 70) {
@@ -31,27 +43,28 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     private var values: [Digit?] {
         didSet {
             updateSegments()
+            
+            if input.count == numberOfDigits {
+                sendActions(for: .editingDidEnd)
+            }
         }
     }
     
     func clearInput() {
         values = Array(repeating: nil, count: numberOfDigits)
-        selectedIndex = 0
+        focussedSegmentIndex = 0
     }
     
     // MARK: Private Vars
     
     private var segments: [CodeInputFieldSegment]
     
-    private var selectedIndex: Int = 0 {
+    private var focussedSegmentIndex: Int = 0 {
         didSet {
-            guard selectedIndex != oldValue else { return }
+            // We always want to send the event even though the index might not have changed
+            sendActions(for: .editingChanged)
             
-            if selectedIndex == highestIndex {
-                sendActions(for: .editingDidEnd)
-            } else {
-                sendActions(for: .editingChanged)
-            }
+            guard focussedSegmentIndex != oldValue else { return }
             
             UIView.transition(with: self, duration: 0.1, options: [.transitionCrossDissolve]) {
                 self.updateSegments()
@@ -113,7 +126,7 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         guard let values = pasteboardValues, values.count == numberOfDigits else { return }
         
         self.values = values
-        selectedIndex = highestIndex
+        focussedSegmentIndex = highestIndex
     }
     
     // MARK: - UIView
@@ -178,7 +191,7 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         addTarget(self, action: #selector(fieldTapped), for: .touchUpInside)
     }
     
-    convenience init(segments: [CodeInputFieldSegment],
+    public convenience init(segments: [CodeInputFieldSegment],
                      shouldClearInputWhenBecomingFirstResponder: Bool = false) {
         self.init(segments: segments)
         self.shouldClearInputWhenBecomingFirstResponder = shouldClearInputWhenBecomingFirstResponder
@@ -195,20 +208,27 @@ extension CodeInputField {
     public var hasText: Bool { return self.input.count > 0 }
     
     public func insertText(_ text: String) {
-        guard selectedIndex <= highestIndex, let intValue = Int(text) else { return }
+        guard focussedSegmentIndex <= highestIndex, let intValue = Int(text) else { return }
         
-        values[selectedIndex] = Digit(rawValue: intValue)
-        selectedIndex = min(highestIndex, selectedIndex + 1)
+        values[focussedSegmentIndex] = Digit(rawValue: intValue)
+        focussedSegmentIndex = min(highestIndex, focussedSegmentIndex + 1)
     }
     
     public func deleteBackward() {
-        let fieldWasEmpty = values[selectedIndex] == nil
+        let fieldWasEmpty = values[focussedSegmentIndex] == nil
         
-        values[selectedIndex] = nil // Making sure the current field content is reset
+        values[focussedSegmentIndex] = nil // Making sure the current field content is reset
         
-        if selectedIndex < highestIndex || fieldWasEmpty {
-            selectedIndex = max(0, selectedIndex - 1)
-            values[selectedIndex] = nil // Making sure the newly selected field is reset
+        if focussedSegmentIndex < highestIndex || fieldWasEmpty {
+            let updatedFocussedSegmentIndex = max(0, focussedSegmentIndex - 1)
+            values[updatedFocussedSegmentIndex] = nil // Making sure the newly selected field is reset
+            
+            // Setting the index after the change so the editing events are sent in the correct order
+            focussedSegmentIndex = updatedFocussedSegmentIndex
+        } else {
+            // We're not changing the index but want to trigger the .editingChanged event
+            let updatedFocussedSegmentIndex = focussedSegmentIndex
+            focussedSegmentIndex = updatedFocussedSegmentIndex
         }
     }
 }
@@ -276,8 +296,8 @@ private extension CodeInputField {
     
     func updateSegments() {
         segments.enumerated().forEach { (index, segment) in
-            segment.isSelected = (index == selectedIndex)
-            segment.value = values[index]
+            segment.update(value: values[index],
+                           isFocussed: index == focussedSegmentIndex)
         }
     }
     

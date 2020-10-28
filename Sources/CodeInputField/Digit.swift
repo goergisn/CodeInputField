@@ -1,4 +1,5 @@
 
+/// Allowed input
 public enum Digit: Int {
     case one = 1
     case two = 2
