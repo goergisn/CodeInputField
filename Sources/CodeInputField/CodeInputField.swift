@@ -178,6 +178,12 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         addTarget(self, action: #selector(fieldTapped), for: .touchUpInside)
     }
     
+    convenience init(segments: [CodeInputFieldSegment],
+                     shouldClearInputWhenBecomingFirstResponder: Bool = false) {
+        self.init(segments: segments)
+        self.shouldClearInputWhenBecomingFirstResponder = shouldClearInputWhenBecomingFirstResponder
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError()
     }
