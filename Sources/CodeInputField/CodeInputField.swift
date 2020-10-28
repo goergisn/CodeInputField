@@ -44,7 +44,7 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         didSet {
             updateSegments()
             
-            if values.count == numberOfDigits {
+            if input.count == numberOfDigits {
                 sendActions(for: .editingDidEnd)
             }
         }
