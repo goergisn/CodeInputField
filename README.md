@@ -1,6 +1,8 @@
 # CodeInputField
 An input field allowing the user to enter digits
 
+[![Swift Package Manager](https://img.shields.io/badge/SPM-compatible-brightGreen)](https://swift.org/package-manager/)
+
 ## Usage
 ![Obfuscated Code Input Preview](https://github.com/goergisn/CodeInputField/blob/main/Resources/obfuscated_input.gif)
 
@@ -26,3 +28,11 @@ let codeInputField = CodeInputField(segments: (0..<6).map { _ in
     return segment
 })
 ```
+
+## Author
+
+[Alex Guretzki](mailto:hi@goergisn.de), https://goergisn.de
+
+## License
+
+CodeInputField is available under the MIT license. See the LICENSE file for more info.
