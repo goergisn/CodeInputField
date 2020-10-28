@@ -14,8 +14,9 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     
     public var input: String {
         get {
-            return values.map { (value) -> String in
-                return "\(String(describing: value))"
+            return values.compactMap { (value) -> String? in
+                guard let value = value else { return nil }
+                return "\(value.rawValue)"
             }.joined(separator: "")
         }
     }
