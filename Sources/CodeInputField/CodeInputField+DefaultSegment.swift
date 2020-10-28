@@ -59,7 +59,7 @@ public extension CodeInputField {
             }
         }
         
-        var borderWidth: CGFloat = 3 {
+        public var borderWidth: CGFloat = 3 {
             didSet {
                 update()
             }
