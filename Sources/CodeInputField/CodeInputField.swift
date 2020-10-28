@@ -210,8 +210,11 @@ extension CodeInputField {
     public func insertText(_ text: String) {
         guard focussedSegmentIndex <= highestIndex, let intValue = Int(text) else { return }
         
-        values[focussedSegmentIndex] = Digit(rawValue: intValue)
-        focussedSegmentIndex = min(highestIndex, focussedSegmentIndex + 1)
+        let oldFocussedIndex = focussedSegmentIndex
+        focussedSegmentIndex =  min(highestIndex, focussedSegmentIndex + 1)
+        
+        // Setting the values after the index to have events triggered in the correct order
+        values[oldFocussedIndex] = Digit(rawValue: intValue)
     }
     
     public func deleteBackward() {
@@ -224,6 +227,10 @@ extension CodeInputField {
             values[updatedFocussedSegmentIndex] = nil // Making sure the newly selected field is reset
             
             // Setting the index after the change so the editing events are sent in the correct order
+            focussedSegmentIndex = updatedFocussedSegmentIndex
+        } else {
+            // We're not changing the index but want to trigger the .editingChanged event
+            let updatedFocussedSegmentIndex = focussedSegmentIndex
             focussedSegmentIndex = updatedFocussedSegmentIndex
         }
     }
