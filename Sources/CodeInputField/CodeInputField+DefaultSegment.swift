@@ -2,6 +2,7 @@
 import UIKit
 
 public extension CodeInputField {
+    /// A rounded rect segment showing an outline when focussed
     class DefaultSegment: UIView, CodeInputFieldSegment {
         
         // MARK: - UI Elements
@@ -17,16 +18,17 @@ public extension CodeInputField {
         
         // MARK: - Public Accessors
         
-        public var value: Digit? {
-            didSet {
-                label.text = text(for: value)
-                
-                if value == oldValue { return }
-                
-                UIView.animate(withDuration: 0.2, delay: 0, options: .beginFromCurrentState, animations: {
-                    self.update()
-                })
-            }
+        public func update(value: Digit?, isFocussed: Bool) {
+            guard self.value != value || self.isFocussed != isFocussed else { return }
+            
+            self.value = value
+            self.isFocussed = isFocussed
+            
+            label.text = text(for: value)
+            
+            UIView.animate(withDuration: 0.2, delay: 0, options: .beginFromCurrentState, animations: {
+                self.update()
+            })
         }
         
         public var inputFont: UIFont {
@@ -63,31 +65,6 @@ public extension CodeInputField {
             }
         }
         
-        private var inputOverride: String?
-        
-        private var sanitizedCornerRadius: CGFloat {
-            return min(min(bounds.size.width * 0.5, bounds.size.height * 0.5), cornerRadius)
-        }
-        
-        func text(for value: Digit?) -> String? {
-            if let value = value {
-                return inputOverride ?? "\(value.rawValue)"
-            } else {
-                return nil
-            }
-        }
-        
-        public var isSelected: Bool = false {
-            didSet {
-                if isSelected == oldValue { return }
-                
-                UIView.animate(withDuration: 0.2, delay: 0, options: .beginFromCurrentState, animations: {
-                    self.update()
-                })
-                
-            }
-        }
-        
         override public var tintColor: UIColor? {
             didSet {
                 update()
@@ -96,8 +73,33 @@ public extension CodeInputField {
         
         // MARK: - Privates
         
+        private var value: Digit?
+        
+        private var isFocussed: Bool = false
+        
+        private var inputOverride: String?
+        
+        /**
+         Applies the `inputOverride` if provided. Otherwise returns the string representation off the value
+         
+         - parameters:
+            - value: the value we want to have a String representation for.
+         */
+        private func text(for value: Digit?) -> String? {
+            if let value = value {
+                return inputOverride ?? "\(value.rawValue)"
+            } else {
+                return nil
+            }
+        }
+        
+        /// Making sure the corner radius isn't larger than 0.5 x the shortest side
+        private var sanitizedCornerRadius: CGFloat {
+            return min(min(bounds.size.width * 0.5, bounds.size.height * 0.5), cornerRadius)
+        }
+        
         private func update() {
-            layer.borderWidth = isSelected ? borderWidth : 0
+            layer.borderWidth = isFocussed ? borderWidth : 0
             layer.borderColor = tintColor?.cgColor
             label.alpha = value != nil ? 1 : 0
             label.textColor = inputColor

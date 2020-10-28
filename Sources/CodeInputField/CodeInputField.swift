@@ -1,6 +1,13 @@
 
 import UIKit
 
+
+/**
+ An input field allowing the user to enter digits
+ 
+- Sends `.editingChanged` event on input change
+- Sends `.editingDidEnd` event when input is complete (all fields are filled)
+ */
 public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     
     // MARK: Public Accessors
@@ -13,6 +20,11 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         }
     }
     
+    
+    /**
+     Clears the input when becoming first responder
+     Useful for obfuscated code input
+     */
     public var shouldClearInputWhenBecomingFirstResponder: Bool = false
     
     public var preferredSegmentSize = CGSize(width: 50, height: 70) {
@@ -36,18 +48,18 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     
     func clearInput() {
         values = Array(repeating: nil, count: numberOfDigits)
-        selectedIndex = 0
+        focussedSegmentIndex = 0
     }
     
     // MARK: Private Vars
     
     private var segments: [CodeInputFieldSegment]
     
-    private var selectedIndex: Int = 0 {
+    private var focussedSegmentIndex: Int = 0 {
         didSet {
-            guard selectedIndex != oldValue else { return }
+            guard focussedSegmentIndex != oldValue else { return }
             
-            if selectedIndex == highestIndex {
+            if focussedSegmentIndex == highestIndex {
                 sendActions(for: .editingDidEnd)
             } else {
                 sendActions(for: .editingChanged)
@@ -113,7 +125,7 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         guard let values = pasteboardValues, values.count == numberOfDigits else { return }
         
         self.values = values
-        selectedIndex = highestIndex
+        focussedSegmentIndex = highestIndex
     }
     
     // MARK: - UIView
@@ -193,20 +205,20 @@ extension CodeInputField {
     public var hasText: Bool { return self.input.count > 0 }
     
     public func insertText(_ text: String) {
-        guard selectedIndex <= highestIndex, let intValue = Int(text) else { return }
+        guard focussedSegmentIndex <= highestIndex, let intValue = Int(text) else { return }
         
-        values[selectedIndex] = Digit(rawValue: intValue)
-        selectedIndex = min(highestIndex, selectedIndex + 1)
+        values[focussedSegmentIndex] = Digit(rawValue: intValue)
+        focussedSegmentIndex = min(highestIndex, focussedSegmentIndex + 1)
     }
     
     public func deleteBackward() {
-        let fieldWasEmpty = values[selectedIndex] == nil
+        let fieldWasEmpty = values[focussedSegmentIndex] == nil
         
-        values[selectedIndex] = nil // Making sure the current field content is reset
+        values[focussedSegmentIndex] = nil // Making sure the current field content is reset
         
-        if selectedIndex < highestIndex || fieldWasEmpty {
-            selectedIndex = max(0, selectedIndex - 1)
-            values[selectedIndex] = nil // Making sure the newly selected field is reset
+        if focussedSegmentIndex < highestIndex || fieldWasEmpty {
+            focussedSegmentIndex = max(0, focussedSegmentIndex - 1)
+            values[focussedSegmentIndex] = nil // Making sure the newly selected field is reset
         }
     }
 }
@@ -274,8 +286,8 @@ private extension CodeInputField {
     
     func updateSegments() {
         segments.enumerated().forEach { (index, segment) in
-            segment.isSelected = (index == selectedIndex)
-            segment.value = values[index]
+            segment.update(value: values[index],
+                           isFocussed: index == focussedSegmentIndex)
         }
     }
     
