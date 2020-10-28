@@ -161,16 +161,13 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     
     // MARK: - Init
     
-    public init(segments: [CodeInputFieldSegment],
-                shouldClearInputWhenBecomingFirstResponder: Bool = false) {
+    public init(segments: [CodeInputFieldSegment]) {
         self.values = Array(repeating: nil, count: segments.count)
         self.segments = segments
         
         super.init(frame: .zero)
         
-        segments.forEach { (field) in
-            self.addSubview(field)
-        }
+        segments.forEach(self.addSubview)
         
         self.addGestureRecognizer(UILongPressGestureRecognizer.init(target: self, action: #selector(longPressRecognized(_:))))
         self.isUserInteractionEnabled = true
@@ -178,7 +175,6 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         updateSegments()
         updateColors()
         
-        self.shouldClearInputWhenBecomingFirstResponder = shouldClearInputWhenBecomingFirstResponder
         addTarget(self, action: #selector(fieldTapped), for: .touchUpInside)
     }
     
