@@ -220,8 +220,11 @@ extension CodeInputField {
         values[focussedSegmentIndex] = nil // Making sure the current field content is reset
         
         if focussedSegmentIndex < highestIndex || fieldWasEmpty {
-            focussedSegmentIndex = max(0, focussedSegmentIndex - 1)
-            values[focussedSegmentIndex] = nil // Making sure the newly selected field is reset
+            let updatedFocussedSegmentIndex = max(0, focussedSegmentIndex - 1)
+            values[updatedFocussedSegmentIndex] = nil // Making sure the newly selected field is reset
+            
+            // Setting the index after the change so the editing events are sent in the correct order
+            focussedSegmentIndex = updatedFocussedSegmentIndex
         }
     }
 }
