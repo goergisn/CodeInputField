@@ -24,7 +24,7 @@ let package = Package(
         .target(
             name: "CodeInputField",
             dependencies: [],
-            exclude: ["Resources/*"]),
+            exclude: ["Resources"]),
         .testTarget(
             name: "CodeInputFieldTests",
             dependencies: ["CodeInputField"]),
