@@ -5,7 +5,7 @@ An input field allowing the user to enter digits
 ![Obfuscated Code Input Preview](https://github.com/goergisn/CodeInputField/blob/main/Resources/obfuscated_input.gif)
 
 ```Swift
-// Ubfuscated input field that shows a 🔒 instead of the actual digits
+// Obfuscated input field that shows a 🔒 instead of the actual digits
 let secureInputField = CodeInputField(segments: (0..<4).map { _ in
     let segment = CodeInputField.DefaultSegment(inputOverride: "🔒")
     segment.tintColor = .purple
