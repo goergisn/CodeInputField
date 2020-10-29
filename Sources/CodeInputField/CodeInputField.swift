@@ -1,6 +1,12 @@
+//
+//  CodeInputField.swift
+//  CodeInputField
+//
+//  Created by Alex Guretzki on 27/10/2020.
+//  Copyright © 2020 Goergisn. All rights reserved.
+//
 
 import UIKit
-
 
 /**
  An input field allowing the user to enter digits
@@ -192,7 +198,7 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     }
     
     public convenience init(segments: [CodeInputFieldSegment],
-                     shouldClearInputWhenBecomingFirstResponder: Bool = false) {
+                            shouldClearInputWhenBecomingFirstResponder: Bool) {
         self.init(segments: segments)
         self.shouldClearInputWhenBecomingFirstResponder = shouldClearInputWhenBecomingFirstResponder
     }

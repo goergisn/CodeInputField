@@ -1,3 +1,10 @@
+//
+//  CodeInputField+DefaultSegment.swift
+//  CodeInputField
+//
+//  Created by Alex Guretzki on 27/10/2020.
+//  Copyright © 2020 Goergisn. All rights reserved.
+//
 
 import UIKit
 
@@ -59,7 +66,7 @@ public extension CodeInputField {
             }
         }
         
-        var borderWidth: CGFloat = 3 {
+        public var borderWidth: CGFloat = 3 {
             didSet {
                 update()
             }
