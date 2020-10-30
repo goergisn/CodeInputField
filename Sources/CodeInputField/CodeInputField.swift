@@ -54,7 +54,7 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         }
     }
     
-    func clearInput() {
+    public func clearInput() {
         values = Array(repeating: nil, count: numberOfDigits)
         focussedSegmentIndex = 0
     }
