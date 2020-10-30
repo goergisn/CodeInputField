@@ -18,6 +18,7 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
     
     // MARK: Public Accessors
     
+    /// Compiles a string from the entered digits
     public var input: String {
         get {
             return values.compactMap { (value) -> String? in
@@ -27,12 +28,18 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         }
     }
     
+    /// Returns the number of segments added to the field
+    public var numberOfDigits: Int {
+        return values.count
+    }
+    
     /**
      Clears the input when becoming first responder
      Useful for obfuscated code input
      */
     public var shouldClearInputWhenBecomingFirstResponder: Bool = false
     
+    /// Defines the preferred segment size used to calculate the needed field size
     public var preferredSegmentSize = CGSize(width: 50, height: 70) {
         didSet {
             invalidateIntrinsicContentSize()
@@ -40,11 +47,19 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
         }
     }
     
+    /// Spacing between the segments
     public var segmentSpacing: CGFloat = 8 {
         didSet {
             setNeedsLayout()
         }
     }
+    
+    func clearInput() {
+        values = Array(repeating: nil, count: numberOfDigits)
+        focussedSegmentIndex = 0
+    }
+    
+    // MARK: Private Vars
     
     private var values: [Digit?] {
         didSet {
@@ -55,13 +70,6 @@ public class CodeInputField: UIControl, UIKeyInput, UITextInputTraits {
             }
         }
     }
-    
-    func clearInput() {
-        values = Array(repeating: nil, count: numberOfDigits)
-        focussedSegmentIndex = 0
-    }
-    
-    // MARK: Private Vars
     
     private var segments: [CodeInputFieldSegment]
     
@@ -322,9 +330,5 @@ private extension CodeInputField {
     
     private var highestIndex: Int {
         return numberOfDigits-1
-    }
-    
-    private var numberOfDigits: Int {
-        return values.count
     }
 }
